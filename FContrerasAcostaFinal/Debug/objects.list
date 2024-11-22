@@ -1,4 +1,5 @@
 "./Core/Src/ApplicationCode.o"
+"./Core/Src/InterruptControl.o"
 "./Core/Src/LCD_Driver.o"
 "./Core/Src/fonts.o"
 "./Core/Src/ili9341.o"
@@ -6,7 +7,6 @@
 "./Core/Src/stm32f4xx_hal_msp.o"
 "./Core/Src/stm32f4xx_it.o"
 "./Core/Src/stmpe811.o"
-"./Core/Src/syscalls.o"
 "./Core/Src/sysmem.o"
 "./Core/Src/system_stm32f4xx.o"
 "./Core/Startup/startup_stm32f429zitx.o"

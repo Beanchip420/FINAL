@@ -25,7 +25,9 @@ void ApplicationInit(void)
 	initialise_monitor_handles(); // Allows printf functionality
     LTCD__Init();
     LTCD_Layer_Init(0);
-    LCD_Clear(0,LCD_COLOR_WHITE);
+    //TODO: Comment/Delete the LCD_Clear function call!
+    LCD_Clear(0,LCD_COLOR_BLACK);
+
 
     #if COMPILE_TOUCH_FUNCTIONS == 1
 	InitializeLCDTouch();
@@ -39,12 +41,24 @@ void ApplicationInit(void)
 	#endif // TOUCH_INTERRUPT_ENABLED
 
 	#endif // COMPILE_TOUCH_FUNCTIONS
+
+	First_Screen();
 }
 
 void LCD_Visual_Demo(void)
 {
 	visualDemo();
 }
+// ************** Write your functions here **************
+
+void First_Screen(void)
+{
+	Start_Screen();
+}
+
+
+// ************** Write your functions here **************
+
 
 #if COMPILE_TOUCH_FUNCTIONS == 1
 void LCD_Touch_Polling_Demo(void)
@@ -98,11 +112,11 @@ void EXTI15_10_IRQHandler()
 	HAL_NVIC_DisableIRQ(EXTI15_10_IRQn); // May consider making this a universial interrupt guard
 	bool isTouchDetected = false;
 
-	static uint32_t count;
-	count = 0;
-	while(count == 0){
-		count = STMPE811_Read(STMPE811_FIFO_SIZE);
-	}
+	//static uint32_t count;
+	//count = 0;
+	//while(count == 0){
+	//	count = STMPE811_Read(STMPE811_FIFO_SIZE);
+	//}
 
 	// Disable touch interrupt bit on the STMPE811
 	uint8_t currentIRQEnables = ReadRegisterFromTouchModule(STMPE811_INT_EN);

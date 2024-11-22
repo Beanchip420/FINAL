@@ -16,6 +16,7 @@
 
 void ApplicationInit(void);
 void LCD_Visual_Demo(void);
+void First_Screen();
 
 #if (COMPILE_TOUCH_FUNCTIONS == 1) && (COMPILE_TOUCH_INTERRUPT_SUPPORT == 0)
 void LCD_Touch_Polling_Demo(void);

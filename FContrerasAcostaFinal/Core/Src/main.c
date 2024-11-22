@@ -20,6 +20,9 @@
 #include "main.h"
 #include "ApplicationCode.h"
 
+#include <stdio.h>
+extern void initialise_monitor_handles(void);
+
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 void SystemClockOverride(void);
@@ -31,7 +34,7 @@ void SystemClockOverride(void);
   */
 int main(void)
 {
-
+  initialise_monitor_handles();
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
   HAL_Init();
 
@@ -41,7 +44,9 @@ int main(void)
 
   ApplicationInit(); // Initializes the LCD functionality
 
-  LCD_Visual_Demo();
+  //LCD_Visual_Demo();
+
+
 
   HAL_Delay(5000);
 

@@ -378,4 +378,54 @@ void WriteDataToTouchModule(uint8_t RegToWrite, uint8_t writeData)
 	STMPE811_Write(RegToWrite, writeData);
 }
 
+// ************** Write your functions here **************
+
+
+void Start_Screen()
+{
+	LCD_SetTextColor(LCD_COLOR_WHITE);
+	LCD_SetFont(&Font16x24);
+	LCD_DisplayChar(20,10,'T');
+	LCD_DisplayChar(50,10,'E');
+	LCD_DisplayChar(80,10,'T');
+	LCD_DisplayChar(110,10,'R');
+	LCD_DisplayChar(140,10,'I');
+	LCD_DisplayChar(170,10,'S');
+
+}
+
+void O_Shape(void)
+{
+
+}
+void I_Shape(void)
+{
+
+}
+void S_Shape(void)
+{
+
+}
+void Z_Shape(void)
+{
+
+}
+void L_Shape(void)
+{
+
+}
+void J_Shape(void)
+{
+
+}
+void T_Shape(void)
+{
+
+}
+
+
+// ************** Write your functions here **************
+
+
+
 #endif // COMPILE_TOUCH_FUNCTIONS

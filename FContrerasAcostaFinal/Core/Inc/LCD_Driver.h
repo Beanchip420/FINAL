@@ -84,10 +84,21 @@ void DetermineTouchPosition(STMPE811_TouchData * touchStruct);
 uint8_t ReadRegisterFromTouchModule(uint8_t RegToRead);
 void WriteDataToTouchModule(uint8_t RegToWrite, uint8_t writeData);
 
+
 #endif // COMPILE_TOUCH_FUNCTIONS
 
 
 /*        APPLICATION SPECIFIC FUNCTION DECLARATION - PUT YOUR NEWLY CREATED FUNCTIONS HERE       */
+
+void Start_Screen(void);
+
+void O_Shape(void);
+void I_Shape(void);
+void S_Shape(void);
+void Z_Shape(void);
+void L_Shape(void);
+void J_Shape(void);
+void T_Shape(void);
 
 
 #endif /* INC_LCD_DRIVER_H_ */
