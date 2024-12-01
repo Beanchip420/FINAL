@@ -26,14 +26,15 @@ void ApplicationInit(void)
     LTCD__Init();
     LTCD_Layer_Init(0);
     //TODO: Comment/Delete the LCD_Clear function call!
-    LCD_Clear(0,LCD_COLOR_BLACK);
 
-
+    // POLLING TOUCH SCREEN:
     #if COMPILE_TOUCH_FUNCTIONS == 1
 	InitializeLCDTouch();
 
-	// This is the orientation for the board to be direclty up where the buttons are vertically above the screen
-	// Top left would be low x value, high y value. Bottom right would be low x value, low y value.
+	// This is the orientation for the board to be directly up where the buttons are
+	// vertically above the screen Top left would be low x value, high y value. Bottom
+	// right would be low x value, low y value.
+
 	StaticTouchData.orientation = STMPE811_Orientation_Portrait_2;
 
 	#if TOUCH_INTERRUPT_ENABLED == 1

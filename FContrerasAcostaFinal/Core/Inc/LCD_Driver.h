@@ -25,13 +25,13 @@
 #define LCD_COLOR_WHITE         0xFFFF
 #define LCD_COLOR_BLACK         0x0000
 #define LCD_COLOR_GREY          0xF7DE
-#define LCD_COLOR_BLUE          0x001F
-#define LCD_COLOR_BLUE2         0x051F
-#define LCD_COLOR_RED           0xF800
-#define LCD_COLOR_MAGENTA       0xF81F
-#define LCD_COLOR_GREEN         0x07E0
-#define LCD_COLOR_CYAN          0x7FFF
-#define LCD_COLOR_YELLOW        0xFFE0
+#define LCD_COLOR_BLUE          0x001F // L Shape
+#define LCD_COLOR_BLUE2         0x051F // T Shape
+#define LCD_COLOR_RED           0xF800 // S Shape
+#define LCD_COLOR_MAGENTA       0xF81F // J Shape
+#define LCD_COLOR_GREEN         0x07E0 // Z Shape
+#define LCD_COLOR_CYAN          0x7FFF // I Shape
+#define LCD_COLOR_YELLOW        0xFFE0 // O Shape
 
 /* Timing configuration from datahseet
   HSYNC=10 (9+1)
@@ -90,15 +90,18 @@ void WriteDataToTouchModule(uint8_t RegToWrite, uint8_t writeData);
 
 /*        APPLICATION SPECIFIC FUNCTION DECLARATION - PUT YOUR NEWLY CREATED FUNCTIONS HERE       */
 
+#define BLOCK 30
+#define ARBITRARY 5050
+
 void Start_Screen(void);
 
-void O_Shape(void);
-void I_Shape(void);
-void S_Shape(void);
-void Z_Shape(void);
-void L_Shape(void);
-void J_Shape(void);
-void T_Shape(void);
+void O_Shape(uint16_t x, uint16_t y, uint16_t len, uint16_t color);
+void I_Shape(uint16_t x, uint16_t y, uint16_t len, uint16_t color);
+void S_Shape(uint16_t x, uint16_t y, uint16_t len, uint16_t color);
+void Z_Shape(uint16_t x, uint16_t y, uint16_t len, uint16_t color);
+void L_Shape(uint16_t x, uint16_t y, uint16_t len, uint16_t color);
+void J_Shape(uint16_t x, uint16_t y, uint16_t len, uint16_t color);
+void T_Shape(uint16_t x, uint16_t y, uint16_t len, uint16_t color);
 
 
 #endif /* INC_LCD_DRIVER_H_ */

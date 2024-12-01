@@ -52,7 +52,9 @@ int main(void)
 
   // DO NOT CALL THIS FUNCTION WHEN INTERRUPT MODE IS SELECTED IN THE COMPILE SWITCH IN stmpe811.h
   // Un-comment the below function after setting COMPILE_TOUCH to 1 in stmpe811.h
-  //LCD_Touch_Polling_Demo(); // This function Will not return
+  // LCD_Touch_Polling_Demo(); // This function Will not return
+
+  // Orientation of the board: Top left is the x and y axis ORIGIN
 
   while (1)
   {
@@ -309,6 +311,10 @@ void SystemClockOverride(void)
 
 /* USER CODE BEGIN 4 */
 
+
+
+
+
 /* USER CODE END 4 */
 
 /**
@@ -318,7 +324,13 @@ void SystemClockOverride(void)
 void Error_Handler(void)
 {
   /* USER CODE BEGIN Error_Handler_Debug */
+
+
+
   /* User can add his own implementation to report the HAL error return state */
+
+
+
   __disable_irq();
   while (1)
   {
