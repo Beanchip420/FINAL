@@ -223,6 +223,7 @@ void LCD_Draw_Pixel(uint16_t x, uint16_t y, uint16_t color)
  * Instead all of these are explicit where color, size, and position are passed in.
  * There is tons of ways to handle drawing. I dont think it matters too much.
  */
+#if EX_CODE == 1
 void LCD_Draw_Circle_Fill(uint16_t Xpos, uint16_t Ypos, uint16_t radius, uint16_t color)
 {
     for(int16_t y=-radius; y<=radius; y++)
@@ -244,6 +245,7 @@ void LCD_Draw_Vertical_Line(uint16_t x, uint16_t y, uint16_t len, uint16_t color
 	  LCD_Draw_Pixel(x, i+y, color);
   }
 }
+#endif
 
 void LCD_Clear(uint8_t LayerIndex, uint16_t Color)
 {
@@ -293,7 +295,7 @@ void LCD_DisplayChar(uint16_t Xpos, uint16_t Ypos, uint8_t Ascii)
   Ascii -= 32;
   LCD_Draw_Char(Xpos, Ypos, &LCD_Currentfonts->table[Ascii * LCD_Currentfonts->Height]);
 }
-
+#if EX_CODE == 1
 void visualDemo(void)
 {
 	uint16_t x;
@@ -339,7 +341,7 @@ void visualDemo(void)
 	LCD_DisplayChar(130,160,'l');
 	LCD_DisplayChar(140,160,'d');
 }
-
+#endif
 /**
   * @brief  This function is executed in case of error occurrence.
   * @retval None
@@ -390,7 +392,7 @@ void WriteDataToTouchModule(uint8_t RegToWrite, uint8_t writeData)
 // ************** Write your functions here **************
 
 
-void Start_Screen()
+void Start_Screen(void)
 {
 	LCD_Clear(0,LCD_COLOR_BLACK);
 	LCD_SetTextColor(LCD_COLOR_WHITE);
@@ -410,12 +412,23 @@ void Start_Screen()
 
 	Z_Shape(0, 150 ,90, LCD_COLOR_GREEN);
 
-	T_Shape(150, 150, 90, LCD_COLOR_BLUE2);
-
-	// THESE WILL BE AT 210 or 240
 	L_Shape(0, 210, 90, LCD_COLOR_BLUE);
 
 	J_Shape(210, 210, 90, LCD_COLOR_MAGENTA);
+
+	T_Shape(150, 150, 90, LCD_COLOR_BLUE2);
+
+	LCD_DisplayChar(35, 250, 'T');
+	LCD_DisplayChar(65, 250, 'A');
+	LCD_DisplayChar(95, 250, 'P');
+
+	LCD_DisplayChar(155, 250, 'T');
+	LCD_DisplayChar(185, 250, 'O');
+
+	LCD_DisplayChar(65, 280, 'P');
+	LCD_DisplayChar(95, 280, 'L');
+	LCD_DisplayChar(125, 280, 'A');
+	LCD_DisplayChar(155, 280, 'Y');
 }
 
 /*
@@ -542,6 +555,16 @@ void T_Shape(uint16_t x, uint16_t y, uint16_t len, uint16_t color)
 	}
 }
 
+void Draw_Block(uint16_t x, uint16_t y, uint16_t color)
+{
+	for (uint16_t i = 0; i < 20; i++)
+	{
+		for (uint16_t ii = 0; ii < 20; ii++)
+		{
+			LCD_Draw_Pixel(i+x, ii+y, color);
+		}
+	}
+}
 
 // ************** Write your functions here **************
 

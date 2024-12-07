@@ -8,10 +8,10 @@
 #ifndef INC_LCD_DRIVER_H_
 #define INC_LCD_DRIVER_H_
 
-#include "stm32f4xx_hal.h"
 #include "ili9341.h"
 #include "fonts.h"
 #include "stmpe811.h"
+
 
 #define COMPILE_TOUCH_FUNCTIONS COMPILE_TOUCH
 #define TOUCH_INTERRUPT_ENABLED COMPILE_TOUCH_INTERRUPT_SUPPORT
@@ -103,5 +103,6 @@ void L_Shape(uint16_t x, uint16_t y, uint16_t len, uint16_t color);
 void J_Shape(uint16_t x, uint16_t y, uint16_t len, uint16_t color);
 void T_Shape(uint16_t x, uint16_t y, uint16_t len, uint16_t color);
 
+void Draw_Block(uint16_t x, uint16_t y, uint16_t color);
 
 #endif /* INC_LCD_DRIVER_H_ */

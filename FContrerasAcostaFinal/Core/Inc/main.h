@@ -26,9 +26,10 @@
 extern "C" {
 #endif
 
+
+
 /* Includes ------------------------------------------------------------------*/
-#include "stm32f4xx_hal.h"
-#include "InterruptControl.h"
+#include "ApplicationCode.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */

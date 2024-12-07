@@ -9,8 +9,10 @@
 
 /* Static variables */
 
+volatile uint8_t START_FLAG = RESET;
 
-extern void initialise_monitor_handles(void); 
+
+extern void initialise_monitor_handles(void);
 
 #if COMPILE_TOUCH_FUNCTIONS == 1
 static STMPE811_TouchData StaticTouchData;
@@ -25,11 +27,17 @@ void ApplicationInit(void)
 	initialise_monitor_handles(); // Allows printf functionality
     LTCD__Init();
     LTCD_Layer_Init(0);
-    //TODO: Comment/Delete the LCD_Clear function call!
-
     // POLLING TOUCH SCREEN:
     #if COMPILE_TOUCH_FUNCTIONS == 1
 	InitializeLCDTouch();
+
+	First_Screen();
+
+	Tim_Init();
+	IRQ_ENABLE(TIM2_IRQ_NUMBER);
+	IRQ_ENABLE(EXTI0_IRQ_NUMBER);
+	BUTT_Init_IT();
+	Random_Init();
 
 	// This is the orientation for the board to be directly up where the buttons are
 	// vertically above the screen Top left would be low x value, high y value. Bottom
@@ -39,17 +47,44 @@ void ApplicationInit(void)
 
 	#if TOUCH_INTERRUPT_ENABLED == 1
 	LCDTouchScreenInterruptGPIOInit();
+
+
+
 	#endif // TOUCH_INTERRUPT_ENABLED
 
 	#endif // COMPILE_TOUCH_FUNCTIONS
-
-	First_Screen();
 }
 
+void ApplicationGame(void)
+{
+	if (returnTouchStateAndLocation(&StaticTouchData) == STMPE811_State_Pressed)
+	{
+		if(START_FLAG == 0)
+		{
+			addSchedulerEvent(START);
+			START_FLAG = 1;
+		}
+
+		else if(START_FLAG == 1 && StaticTouchData.x<120)
+		{
+			addSchedulerEvent(SHIFT_L);
+		}
+
+		else if(START_FLAG == 1 && StaticTouchData.x>240)
+		{
+			addSchedulerEvent(SHIFT_R);
+		}
+
+	}
+
+}
+
+#if EX_CODE == 1
 void LCD_Visual_Demo(void)
 {
 	visualDemo();
 }
+#endif // Example Code
 // ************** Write your functions here **************
 
 void First_Screen(void)
@@ -57,11 +92,78 @@ void First_Screen(void)
 	Start_Screen();
 }
 
+//void Game(void)
+//{
+//	Game_Screen();
+//}
+
+void Tim_Init(void)
+{
+	TIMER_Init();
+}
+
+void BUTT_Init_IT(void)
+{
+	BUTTON_Init_Interupt();
+}
+
+void Random_Init(void)
+{
+	RNG_Init();
+}
+
+void TIM2_IRQHandler (void)
+{
+	 IRQ_DISABLE(TIM2_IRQ_NUMBER);
+	 IRQ_CLEAR(TIM2_IRQ_NUMBER);
+	 TIM2->SR &= ~(0x1 << UIF_OFFSET); // Lowering the Flag
+
+	 addSchedulerEvent(COUNT);
+
+	 IRQ_ENABLE(TIM2_IRQ_NUMBER);
+}
+
+void EXTI0_IRQHandler(void) // TODO: need to loewr the flag in the nvic
+{
+	 IRQ_DISABLE(EXTI0_IRQ_NUMBER);
+	 IRQ_CLEAR(EXTI0_IRQ_NUMBER);
+
+	 addSchedulerEvent(ROTATE_CC);
+
+	 CLEAR_EXTI(B_PIN);
+	 IRQ_ENABLE(EXTI0_IRQ_NUMBER);
+}
+
+
+#if EX_CODE == 1
+void LCD_Touch_Polling(void)
+{
+		while (1)
+		{
+			/* If touch pressed */
+			if (returnTouchStateAndLocation(&StaticTouchData) == STMPE811_State_Pressed)
+			{
+				/* Touch valid */
+				printf("\nX: %03d\nY: %03d\n", StaticTouchData.x, StaticTouchData.y);
+				LCD_Clear(0, LCD_COLOR_RED);
+			}
+			else
+			{
+				/* Touch not pressed */
+				printf("Not Pressed\n\n");
+				LCD_Clear(0, LCD_COLOR_GREEN);
+			}
+		}
+}
+
+#endif
+
+
 
 // ************** Write your functions here **************
 
 
-#if COMPILE_TOUCH_FUNCTIONS == 1
+#if COMPILE_TOUCH_FUNCTIONS == 1 && EX_CODE == 1
 void LCD_Touch_Polling_Demo(void)
 {
 	LCD_Clear(0,LCD_COLOR_GREEN);

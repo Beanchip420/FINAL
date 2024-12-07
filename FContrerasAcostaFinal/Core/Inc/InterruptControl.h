@@ -49,6 +49,11 @@ typedef struct //6 Members in Structrue
 #define SYSCFG_CLK_DISABLE (RCC->APB2ENR &= (0x1 << SYSCFG_CLK_OFFSET))
 
 #define EXTI0_IRQ_NUMBER 6 // EXTI0 is interrupt for pin 0 but it's IRQ position/number is 6
+#define B_PIN 0
+
+#define TIM2_IRQ_NUMBER 28
+#define UIF_OFFSET 0 // INT Flag for Timer
+
 
 void IRQ_ENABLE(uint8_t number);
 void IRQ_DISABLE(uint8_t number);

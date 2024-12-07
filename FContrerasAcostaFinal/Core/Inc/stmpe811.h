@@ -12,8 +12,12 @@
 #include <stdbool.h>
 #include "stm32f4xx_hal.h"
 
-#define COMPILE_TOUCH  1 //TODO: Switched Comp Touch and Comp Touch Interrupt Suuport Set to 1
-#define COMPILE_TOUCH_INTERRUPT_SUPPORT    1
+#define COMPILE_TOUCH  1
+#define COMPILE_TOUCH_INTERRUPT_SUPPORT    9
+
+// Example Code is not Set
+
+#define EX_CODE		0
 
 #if (COMPILE_TOUCH_INTERRUPT_SUPPORT == 1 && COMPILE_TOUCH == 0)
 #error "You cannot have touch interrupt support without compiling all touch functionality"

@@ -1,0 +1,6 @@
+../Core/Src/Timer.c:15:6:TIMER_Init	2
+../Core/Src/Timer.c:51:6:TIMER_Reset	1
+../Core/Src/Timer.c:61:10:TIMER_ReturnVal	1
+../Core/Src/Timer.c:66:6:TIMER_Int_Start	2
+../Core/Src/Timer.c:76:6:TIMER_Int_Stop	2
+../Core/Src/Timer.c:85:10:Timer_ReturnAuthoRel	1
