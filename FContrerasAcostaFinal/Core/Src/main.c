@@ -44,7 +44,6 @@ int main(void)
   HAL_Init();
 
   // The default system configuration function is "suspect" so we need to make our own clock configuration
-  // TODO: Note - You, the developer, MAY have to play with some of this configuration as you progress in your project
   SystemClockOverride();
 
   ApplicationInit();
@@ -69,11 +68,13 @@ int main(void)
 		   LCD_SetTextColor(LCD_COLOR_WHITE);
 		   LCD_SetFont(&Font12x12);
 		   Start_Tetris();
+
 	   }
 	  else if(getScheduledEvents() == COUNT)
 	  {
 		  removeSchedulerEvent(COUNT);
 		  Move_Down();
+		  Check_Endgame();
 	  }
 	  else if(getScheduledEvents() == ROTATE_CC)
 	  {

@@ -1,6 +1,8 @@
 ../Core/Src/Timer.c:15:6:TIMER_Init	16	static
-../Core/Src/Timer.c:51:6:TIMER_Reset	4	static
-../Core/Src/Timer.c:61:10:TIMER_ReturnVal	4	static
-../Core/Src/Timer.c:66:6:TIMER_Int_Start	8	static
-../Core/Src/Timer.c:76:6:TIMER_Int_Stop	8	static
-../Core/Src/Timer.c:85:10:Timer_ReturnAuthoRel	4	static
+../Core/Src/Timer.c:54:6:TIMER_Reset	4	static
+../Core/Src/Timer.c:65:10:TIMER_ReturnVal	4	static
+../Core/Src/Timer.c:70:6:TIMER_Int_Start	8	static
+../Core/Src/Timer.c:80:6:TIMER_Int_Stop	8	static
+../Core/Src/Timer.c:89:10:Timer_ReturnAuthoRel	4	static
+../Core/Src/Timer.c:94:6:TIMER5_Start	8	static
+../Core/Src/Timer.c:99:6:TIMER_Stop	8	static

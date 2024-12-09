@@ -123,7 +123,7 @@ void TIM2_IRQHandler (void)
 	 IRQ_ENABLE(TIM2_IRQ_NUMBER);
 }
 
-void EXTI0_IRQHandler(void) // TODO: need to loewr the flag in the nvic
+void EXTI0_IRQHandler(void) // : need to loewr the flag in the nvic
 {
 	 IRQ_DISABLE(EXTI0_IRQ_NUMBER);
 	 IRQ_CLEAR(EXTI0_IRQ_NUMBER);

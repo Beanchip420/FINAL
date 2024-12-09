@@ -254,7 +254,6 @@ void LCD_Clear(uint8_t LayerIndex, uint16_t Color)
 			frameBuffer[i] = Color;
 		}
 	}
-  // TODO: Add more Layers if needed
 }
 
 //This was taken and adapted from stm32's mcu code

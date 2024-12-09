@@ -14,11 +14,13 @@
 
 #define PRESCALER	4999
 #define PCLK	84000000
+// To keep track of the time
+#define ARR_MAX 0xFFFFFFFF
 #define ARR_1	16799
 #define ARR_3	50399
 
 void TIMER_Init(void);
-void TIMER_Start(void);
+void TIMER5_Start(void);
 void TIMER_Stop(void);
 void TIMER_Reset(void);
 

@@ -1,7 +1,9 @@
-../Core/Src/Tetris.c:140:6:Start_Tetris	8
-../Core/Src/Tetris.c:192:6:Draw_Shape	4
-../Core/Src/Tetris.c:215:6:Update_Board	4
-../Core/Src/Tetris.c:280:9:Random_Shape	1
-../Core/Src/Tetris.c:287:6:Rotate_CC	6
-../Core/Src/Tetris.c:325:6:Check_Down	8
-../Core/Src/Tetris.c:369:6:Move_Down	2
+../Core/Src/Tetris.c:142:6:Start_Tetris	8
+../Core/Src/Tetris.c:195:6:Draw_Shape	4
+../Core/Src/Tetris.c:218:6:Update_Board	4
+../Core/Src/Tetris.c:236:9:Random_Shape	1
+../Core/Src/Tetris.c:243:6:Rotate_CC	6
+../Core/Src/Tetris.c:281:6:Check_Down	9
+../Core/Src/Tetris.c:337:6:Move_Down	2
+../Core/Src/Tetris.c:361:6:Check_Endgame	3
+../Core/Src/Tetris.c:377:6:EndGame	3

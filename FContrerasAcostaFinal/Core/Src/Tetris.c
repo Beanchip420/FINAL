@@ -10,6 +10,8 @@
 
 // IF THIS LOWEST ROW FLAG is one that means that the lowest row has not been found
 volatile uint8_t LOWRFLAG = 1;
+volatile uint8_t ENDGAME_FLAG = 0;
+volatile uint8_t ELAPSE_FLAG = 0;
 
 static block_t block_struct;
 // Case 0:
@@ -129,7 +131,7 @@ static uint8_t Board [16][12] =
 
 	{1,	1,	0,	0,	0,	0,	0,	0,	0,	0,	1,	1},
 
-	{1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1},
+	{1,	1,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0},
 
 	{1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1}
 
@@ -186,12 +188,13 @@ void Start_Tetris(void)
 
 	Draw_Shape(&block_struct);
 	TIMER_Int_Start();
+	TIMER5_Start();
 
 }
 
 void Draw_Shape(block_t* block)
 {
-	// TODO: Iterate thru the Shape array to find where the ones are
+	// Iterate thru the Shape array to find where the ones are
 	// If element is 1 then draw block @ x_start and y_start
 
 	// If any element in the row is 1 then draw block @ x_start+i and y_start
@@ -210,8 +213,8 @@ void Draw_Shape(block_t* block)
 		}
 	}
 }
-//TODO: Got an Error when I did block_t* block then did switch(block->Current_Shape) so decided to do
-//TODO: Void for input then did an instance!
+// Got an Error when I did block_t* block then did switch(block->Current_Shape) so decided to do
+// Void for input then did an instance!
 void Update_Board(void)
 {
 	uint8_t i;
@@ -228,54 +231,7 @@ void Update_Board(void)
 			}
 		}
 	}
-//	switch(Ran_Numb)
-//	{
-//	// Piece O
-//		case 0:
-//
-//
-//
-//			break;
-//	// Piece I
-//		case 1:
-//
-//
-//
-//			break;
-//	// Piece S
-//		case 2:
-//
-//
-//
-//			break;
-//	// Piece Z
-//		case 3:
-//
-//
-//
-//			break;
-//	// Piece L
-//		case 4:
-//
-//
-//
-//			break;
-//	// Piece J
-//		case 5:
-//
-//
-//
-//			break;
-//	// Piece T
-//		case 6:
-//
-//
-//
-//			break;
-//	}
 }
-
-
 
 uint8_t Random_Shape(void)
 {
@@ -324,7 +280,9 @@ void Rotate_CC(void)
 }
 bool Check_Down(void)
 {
-	uint8_t lowest_row=0;
+	uint8_t lowest_row = 0;
+	uint8_t farthest_l_col = 0;
+	uint8_t farthest_r_col = 0;
 	uint8_t i = 0;
 	uint8_t j = 0;
 
@@ -338,12 +296,22 @@ bool Check_Down(void)
 				{
 					LOWRFLAG = 0;
 					lowest_row = i;
+					farthest_l_col = j;
 					break;
 				}
 			}
 			if (LOWRFLAG == 0)
 			{
+				for ( j = 3; j>-1; j--)
+				{
+					if ( (block_struct.Current_Shape)[lowest_row][j] == 1 )
+					{
+						farthest_r_col = j;
+						break;
+					}
+				}
 				break;
+
 			}
 		}
 
@@ -351,9 +319,9 @@ bool Check_Down(void)
 	{
 //		for (i = 3; i > -1; i--)
 //		{
-		for (j = 0; j < 4; j++)
+		for (j = farthest_l_col; j <= farthest_r_col; j++)
 		{
-			if( Board[ (block_struct.y_pos)+lowest_row-1] [(block_struct.x_pos)+j] == 1)
+			if( Board[ (block_struct.y_pos)+lowest_row] [(block_struct.x_pos)+j] == 1)
 			{
 				return false;
 			}
@@ -388,6 +356,72 @@ void Move_Down(void)
 		Start_Tetris();
 
 	}
+}
+
+void Check_Endgame(void)
+{
+
+	for (uint8_t j = 2; j <= 9; j++)
+	{
+		if ( Board[0][j] == 1)
+		{
+
+			EndGame();
+			ENDGAME_FLAG = 1;
+
+		}
+	}
+
+}
+
+void EndGame(void)
+{
+	uint32_t count_value = 0;
+	uint32_t time_elapsed = 0;
+
+	char Time[5] = {'P', 'P', 'P', 'P', 'P'};
+
+	LCD_Clear(0,LCD_COLOR_BLACK);
+	LCD_SetTextColor(LCD_COLOR_WHITE);
+	LCD_SetFont(&Font12x12);
+
+	LCD_DisplayChar(20, 130, 'E');
+	LCD_DisplayChar(30, 130, 'L');
+	LCD_DisplayChar(40, 130, 'A');
+	LCD_DisplayChar(50, 130, 'P');
+	LCD_DisplayChar(60, 130, 'S');
+	LCD_DisplayChar(70, 130, 'E');
+	LCD_DisplayChar(80, 130, 'D');
+
+	LCD_DisplayChar(100, 150, 'T');
+	LCD_DisplayChar(110, 150, 'I');
+	LCD_DisplayChar(120, 150, 'M');
+	LCD_DisplayChar(130, 150, 'E');
+
+	count_value = TIMER_ReturnVal();
+	// In seconds
+	time_elapsed = ((count_value + 1)*(PRESCALER + 1))/PCLK;
+	itoa(time_elapsed, Time, 10);
+	uint8_t Temp = 0;
+
+	for (uint8_t i = 4; i>-1; i--)
+	{
+		if ( Time[i] != 'P' && ELAPSE_FLAG == 0)
+		{
+			Temp = i;
+			ELAPSE_FLAG = 1;
+		}
+	}
+
+	uint32_t space = 0;
+	for (uint8_t i = 0; i < Temp; i++)
+	{
+
+		LCD_DisplayChar(40+space, 290 ,Time[i]);
+		space += 10;
+	}
+
+	Hal_Delay(5000);
 }
 
 

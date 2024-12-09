@@ -10,6 +10,7 @@
 
 #include <stdio.h>
 #include <stdint.h>
+#include <stdlib.h>
 
 #include <string.h>
 
@@ -50,6 +51,11 @@ void Move_Right(void);
 void Move_Left(void);
 
 uint8_t Random_Shape(void);
+
+void Check_Endgame(void);
+
+void EndGame(void);
+
 
 
 
