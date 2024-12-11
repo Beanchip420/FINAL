@@ -1,0 +1,13 @@
+../Core/Src/Tetris.c:153:6:Start_Tetris	16	static
+../Core/Src/Tetris.c:205:6:Draw_Shape	24	static
+../Core/Src/Tetris.c:228:6:Update_Board	16	static
+../Core/Src/Tetris.c:246:9:Random_Shape	16	static
+../Core/Src/Tetris.c:253:6:Rotate_CC	40	static
+../Core/Src/Tetris.c:291:6:Check_Down	24	static
+../Core/Src/Tetris.c:403:6:Move_Down	16	static
+../Core/Src/Tetris.c:428:6:Check_Endgame	16	static
+../Core/Src/Tetris.c:444:6:EndGame	64	static
+../Core/Src/Tetris.c:515:6:Check_Right	16	static
+../Core/Src/Tetris.c:626:6:Check_Left	16	static
+../Core/Src/Tetris.c:737:6:Move_Right	16	static
+../Core/Src/Tetris.c:757:6:Move_Left	16	static

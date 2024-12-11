@@ -21,12 +21,16 @@ static uint16_t CurrentTextColor   = 0xFFFF;
 
 /*
  * fb[y*W+x] OR fb[y][x]
- * Alternatively, we can modify the linker script to have an end address of 20013DFB instead of 2002FFFF, so it does not place variables in the same region as the frame buffer. In this case it is safe to just specify the raw address as frame buffer.
+ * Alternatively, we can modify the linker script to have an end address of 20013DFB instead of
+ * 2002FFFF, so it does not place variables in the same region as the frame buffer.
+ * In this case it is safe to just specify the raw address as frame buffer.
  */
-//uint32_t frameBuffer[(LCD_PIXEL_WIDTH*LCD_PIXEL_WIDTH)/2] = {0};		//16bpp pixel format. We can size to uint32. this ensures 32 bit alignment
+// uint32_t frameBuffer[(LCD_PIXEL_WIDTH*LCD_PIXEL_WIDTH)/2] = {0};		//16bpp pixel format.
+// We can size to uint32. this ensures 32 bit alignment
 
 
-//Someone from STM said it was "often accessed" a 1-dim array, and not a 2d array. However you still access it like a 2dim array,  using fb[y*W+x] instead of fb[y][x].
+// Someone from STM said it was "often accessed" a 1-dim array, and not a 2d array.
+// However you still access it like a 2dim array,  using fb[y*W+x] instead of fb[y][x].
 uint16_t frameBuffer[LCD_PIXEL_WIDTH*LCD_PIXEL_HEIGHT] = {0};			//16bpp pixel format.
 
 
@@ -121,7 +125,9 @@ void LTCD_Layer_Init(uint8_t LayerIndex)
 	pLayerCfg.WindowX1 = LCD_PIXEL_WIDTH;	//Configures the Window HORZ Stop Position.
 	pLayerCfg.WindowY0 = 0;	//Configures the Window vertical START Position.
 	pLayerCfg.WindowY1 = LCD_PIXEL_HEIGHT;	//Configures the Window vertical Stop Position.
-	pLayerCfg.PixelFormat = LCD_PIXEL_FORMAT_1;  //INCORRECT PIXEL FORMAT WILL GIVE WEIRD RESULTS!! IT MAY STILL WORK FOR 1/2 THE DISPLAY!!! //This is our buffers pixel format. 2 bytes for each pixel
+	pLayerCfg.PixelFormat = LCD_PIXEL_FORMAT_1;  //INCORRECT PIXEL FORMAT WILL GIVE WEIRD RESULTS!!
+	// IT MAY STILL WORK FOR 1/2 THE DISPLAY!!! //This is our buffers pixel format.
+	// 2 bytes for each pixel
 	pLayerCfg.Alpha = 255;
 	pLayerCfg.Alpha0 = 0;
 	pLayerCfg.BlendingFactor1 = LTDC_BLENDING_FACTOR1_CA;
@@ -210,10 +216,14 @@ void LCD_Draw_Pixel(uint16_t x, uint16_t y, uint16_t color)
 }
 
 /*
- * These functions are simple examples. Most computer graphics like OpenGl and stm's graphics library use a state machine. Where you first call some function like SetColor(color), SetPosition(x,y), then DrawSqure(size)
+ * These functions are simple examples. Most computer graphics like OpenGl and stm's graphics
+ * library use a state machine. Where you first call some function like SetColor(color),
+ * SetPosition(x,y), then DrawSqure(size)
+ *
  * Instead all of these are explicit where color, size, and position are passed in.
  * There is tons of ways to handle drawing. I dont think it matters too much.
  */
+#if EX_CODE == 1
 void LCD_Draw_Circle_Fill(uint16_t Xpos, uint16_t Ypos, uint16_t radius, uint16_t color)
 {
     for(int16_t y=-radius; y<=radius; y++)
@@ -235,6 +245,7 @@ void LCD_Draw_Vertical_Line(uint16_t x, uint16_t y, uint16_t len, uint16_t color
 	  LCD_Draw_Pixel(x, i+y, color);
   }
 }
+#endif
 
 void LCD_Clear(uint8_t LayerIndex, uint16_t Color)
 {
@@ -243,7 +254,6 @@ void LCD_Clear(uint8_t LayerIndex, uint16_t Color)
 			frameBuffer[i] = Color;
 		}
 	}
-  // TODO: Add more Layers if needed
 }
 
 //This was taken and adapted from stm32's mcu code
@@ -284,7 +294,7 @@ void LCD_DisplayChar(uint16_t Xpos, uint16_t Ypos, uint8_t Ascii)
   Ascii -= 32;
   LCD_Draw_Char(Xpos, Ypos, &LCD_Currentfonts->table[Ascii * LCD_Currentfonts->Height]);
 }
-
+#if EX_CODE == 1
 void visualDemo(void)
 {
 	uint16_t x;
@@ -330,7 +340,7 @@ void visualDemo(void)
 	LCD_DisplayChar(130,160,'l');
 	LCD_DisplayChar(140,160,'d');
 }
-
+#endif
 /**
   * @brief  This function is executed in case of error occurrence.
   * @retval None
@@ -377,5 +387,186 @@ void WriteDataToTouchModule(uint8_t RegToWrite, uint8_t writeData)
 {
 	STMPE811_Write(RegToWrite, writeData);
 }
+
+// ************** Write your functions here **************
+
+
+void Start_Screen(void)
+{
+	LCD_Clear(0,LCD_COLOR_BLACK);
+	LCD_SetTextColor(LCD_COLOR_WHITE);
+	LCD_SetFont(&Font16x24);
+	LCD_DisplayChar(35,10,'T');
+	LCD_DisplayChar(65,10,'E');
+	LCD_DisplayChar(95,10,'T');
+	LCD_DisplayChar(125,10,'R');
+	LCD_DisplayChar(155,10,'I');
+	LCD_DisplayChar(185,10,'S');
+
+	O_Shape(0, 60, 60, LCD_COLOR_YELLOW);
+
+	I_Shape(210, 0, 120, LCD_COLOR_CYAN);
+
+	S_Shape(90, 90, 90, LCD_COLOR_RED);
+
+	Z_Shape(0, 150 ,90, LCD_COLOR_GREEN);
+
+	L_Shape(0, 210, 90, LCD_COLOR_BLUE);
+
+	J_Shape(210, 210, 90, LCD_COLOR_MAGENTA);
+
+	T_Shape(150, 150, 90, LCD_COLOR_BLUE2);
+
+	LCD_DisplayChar(35, 250, 'T');
+	LCD_DisplayChar(65, 250, 'A');
+	LCD_DisplayChar(95, 250, 'P');
+
+	LCD_DisplayChar(155, 250, 'T');
+	LCD_DisplayChar(185, 250, 'O');
+
+	LCD_DisplayChar(65, 280, 'P');
+	LCD_DisplayChar(95, 280, 'L');
+	LCD_DisplayChar(125, 280, 'A');
+	LCD_DisplayChar(155, 280, 'Y');
+}
+
+/*
+
+void LCD_Draw_Pixel(uint16_t x, uint16_t y, uint16_t color)
+
+void LCD_Draw_Vertical_Line(uint16_t x, uint16_t y, uint16_t len, uint16_t color)
+
+*/
+
+void O_Shape(uint16_t x, uint16_t y, uint16_t len, uint16_t color)
+{
+	for (uint16_t i = 0; i < len; i++)
+	{
+		for (uint16_t ii = 0; ii < len; ii++)
+		{
+			LCD_Draw_Pixel(i+x, ii+y, color);
+		}
+	}
+
+}
+void I_Shape(uint16_t x, uint16_t y, uint16_t len, uint16_t color)
+{
+	for (uint16_t i = 0; i < len/4; i++)
+	{
+		for (uint16_t ii = 0; ii < len; ii++)
+		{
+			LCD_Draw_Pixel(i+x, ii+y, color);
+		}
+	}
+}
+void S_Shape(uint16_t x, uint16_t y, uint16_t len, uint16_t color)
+{
+	for (uint16_t i = 0; i < 2; i++)
+	{
+		for (uint16_t ii = 0; ii < 2*len/3; ii++)
+		{
+			for (uint16_t iii = 0; iii < len/3; iii++)
+			{
+				LCD_Draw_Pixel(ii+x, iii+y, color);
+			}
+		}
+		x=x+BLOCK;
+		y=y-BLOCK;
+	}
+}
+void Z_Shape(uint16_t x, uint16_t y, uint16_t len, uint16_t color)
+{
+	for (uint16_t i = 0; i < 2; i++)
+	{
+		for (uint16_t ii = 0; ii < 2*len/3; ii++)
+		{
+			for (uint16_t iii = 0; iii < len/3; iii++)
+			{
+				LCD_Draw_Pixel(ii+x, iii+y, color);
+			}
+		}
+		x=x+BLOCK;
+		y=y+BLOCK;
+	}
+}
+void L_Shape(uint16_t x, uint16_t y, uint16_t len, uint16_t color)
+{
+
+	for (uint16_t ii = 0 ;ii < len/3; ii++)
+	{
+		for (uint16_t iii = 0 ;iii < len; iii++)
+		{
+			LCD_Draw_Pixel(ii+x, iii+y, color);
+		}
+	}
+	x= x + BLOCK;
+	y= y + 2*BLOCK;
+
+	for (uint16_t ii = 0 ;ii < len/3; ii++)
+	{
+		for (uint16_t iii = 0 ;iii < len/3; iii++)
+		{
+			LCD_Draw_Pixel(ii+x, iii+y, color);
+		}
+	}
+
+
+
+}
+void J_Shape(uint16_t x, uint16_t y, uint16_t len, uint16_t color)
+{
+	for (uint16_t ii = 0 ;ii < len/3; ii++)
+	{
+		for ( uint16_t iii = 0 ;iii < len; iii++)
+		{
+			LCD_Draw_Pixel(ii+x, iii+y, color);
+		}
+	}
+
+	x=x - BLOCK;
+	y=y + 2*BLOCK;
+
+	for (uint16_t ii = 0 ;ii < len/3; ii++)
+	{
+		for (uint16_t iii = 0 ;iii < len/3; iii++)
+		{
+			LCD_Draw_Pixel(ii+x, iii+y, color);
+		}
+
+	}
+}
+void T_Shape(uint16_t x, uint16_t y, uint16_t len, uint16_t color)
+{
+	static uint16_t ii = 0;
+
+	for (uint16_t i = 0 ;i < 2; i++)
+	{
+		for ( ;ii < len; ii++)
+		{
+			for (uint16_t iii = 0 ;iii < len/3; iii++)
+			{
+				LCD_Draw_Pixel(ii+x, iii+y, color);
+			}
+		}
+		x=x-BLOCK;
+		y=y+BLOCK;
+		ii = 2*BLOCK;
+	}
+}
+
+void Draw_Block(uint16_t x, uint16_t y, uint16_t color)
+{
+	for (uint16_t i = 0; i < 20; i++)
+	{
+		for (uint16_t ii = 0; ii < 20; ii++)
+		{
+			LCD_Draw_Pixel(i+x, ii+y, color);
+		}
+	}
+}
+
+// ************** Write your functions here **************
+
+
 
 #endif // COMPILE_TOUCH_FUNCTIONS

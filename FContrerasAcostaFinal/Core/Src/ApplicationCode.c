@@ -9,8 +9,10 @@
 
 /* Static variables */
 
+volatile uint8_t START_FLAG = RESET;
 
-extern void initialise_monitor_handles(void); 
+
+extern void initialise_monitor_handles(void);
 
 #if COMPILE_TOUCH_FUNCTIONS == 1
 static STMPE811_TouchData StaticTouchData;
@@ -25,28 +27,133 @@ void ApplicationInit(void)
 	initialise_monitor_handles(); // Allows printf functionality
     LTCD__Init();
     LTCD_Layer_Init(0);
-    LCD_Clear(0,LCD_COLOR_WHITE);
-
+    // POLLING TOUCH SCREEN:
     #if COMPILE_TOUCH_FUNCTIONS == 1
 	InitializeLCDTouch();
 
-	// This is the orientation for the board to be direclty up where the buttons are vertically above the screen
-	// Top left would be low x value, high y value. Bottom right would be low x value, low y value.
-	StaticTouchData.orientation = STMPE811_Orientation_Portrait_2;
+	First_Screen();
 
+	Tim_Init();
+	IRQ_ENABLE(TIM2_IRQ_NUMBER);
+	IRQ_ENABLE(EXTI0_IRQ_NUMBER);
+	BUTT_Init_IT();
+	Random_Init();
+
+	// This is the orientation for the board to be directly up where the buttons are
+	// vertically above the screen Top left would be low x value, high y value. Bottom
+	// right would be low x value, low y value.
+
+	StaticTouchData.orientation = STMPE811_Orientation_Portrait_2;
 	#if TOUCH_INTERRUPT_ENABLED == 1
-	LCDTouchScreenInterruptGPIOInit();
+		LCDTouchScreenInterruptGPIOInit();
+
 	#endif // TOUCH_INTERRUPT_ENABLED
+
+
 
 	#endif // COMPILE_TOUCH_FUNCTIONS
 }
 
+void ApplicationGame(void)
+{
+	if (returnTouchStateAndLocation(&StaticTouchData) == STMPE811_State_Pressed)
+	{
+		if(START_FLAG == 0)
+		{
+			addSchedulerEvent(START);
+
+			START_FLAG = 1;
+		}
+
+	}
+
+}
+
+#if EX_CODE == 1
 void LCD_Visual_Demo(void)
 {
 	visualDemo();
 }
+#endif // Example Code
+// ************** Write your functions here **************
 
-#if COMPILE_TOUCH_FUNCTIONS == 1
+void First_Screen(void)
+{
+	Start_Screen();
+}
+
+//void Game(void)
+//{
+//	Game_Screen();
+//}
+
+void Tim_Init(void)
+{
+	TIMER_Init();
+}
+
+void BUTT_Init_IT(void)
+{
+	BUTTON_Init_Interupt();
+}
+
+void Random_Init(void)
+{
+	RNG_Init();
+}
+
+void TIM2_IRQHandler (void)
+{
+	 IRQ_DISABLE(TIM2_IRQ_NUMBER);
+	 IRQ_CLEAR(TIM2_IRQ_NUMBER);
+	 TIM2->SR &= ~(0x1 << UIF_OFFSET); // Lowering the Flag
+
+	 addSchedulerEvent(COUNT);
+
+	 IRQ_ENABLE(TIM2_IRQ_NUMBER);
+}
+
+void EXTI0_IRQHandler(void) // : need to loewr the flag in the nvic
+{
+	 IRQ_DISABLE(EXTI0_IRQ_NUMBER);
+	 IRQ_CLEAR(EXTI0_IRQ_NUMBER);
+
+	 addSchedulerEvent(ROTATE_CC);
+
+	 CLEAR_EXTI(B_PIN);
+	 IRQ_ENABLE(EXTI0_IRQ_NUMBER);
+}
+
+
+#if EX_CODE == 1
+void LCD_Touch_Polling(void)
+{
+		while (1)
+		{
+			/* If touch pressed */
+			if (returnTouchStateAndLocation(&StaticTouchData) == STMPE811_State_Pressed)
+			{
+				/* Touch valid */
+				printf("\nX: %03d\nY: %03d\n", StaticTouchData.x, StaticTouchData.y);
+				LCD_Clear(0, LCD_COLOR_RED);
+			}
+			else
+			{
+				/* Touch not pressed */
+				printf("Not Pressed\n\n");
+				LCD_Clear(0, LCD_COLOR_GREEN);
+			}
+		}
+}
+
+#endif
+
+
+
+// ************** Write your functions here **************
+
+
+#if COMPILE_TOUCH_FUNCTIONS == 1 && EX_CODE == 1
 void LCD_Touch_Polling_Demo(void)
 {
 	LCD_Clear(0,LCD_COLOR_GREEN);
@@ -63,6 +170,7 @@ void LCD_Touch_Polling_Demo(void)
 		}
 	}
 }
+#endif
 
 
 // TouchScreen Interrupt
@@ -98,11 +206,11 @@ void EXTI15_10_IRQHandler()
 	HAL_NVIC_DisableIRQ(EXTI15_10_IRQn); // May consider making this a universial interrupt guard
 	bool isTouchDetected = false;
 
-	static uint32_t count;
-	count = 0;
-	while(count == 0){
-		count = STMPE811_Read(STMPE811_FIFO_SIZE);
-	}
+	//static uint32_t count;
+	//count = 0;
+	//while(count == 0){
+	//	count = STMPE811_Read(STMPE811_FIFO_SIZE);
+	//}
 
 	// Disable touch interrupt bit on the STMPE811
 	uint8_t currentIRQEnables = ReadRegisterFromTouchModule(STMPE811_INT_EN);
@@ -122,18 +230,40 @@ void EXTI15_10_IRQHandler()
 	// Determine if it is pressed or unpressed
 	if(isTouchDetected) // Touch has been detected
 	{
-		printf("\nPressed");
+		//printf("\nPressed");
 		// May need to do numerous retries? 
 		DetermineTouchPosition(&StaticTouchData);
 		/* Touch valid */
 		printf("\nX: %03d\nY: %03d \n", StaticTouchData.x, StaticTouchData.y);
-		LCD_Clear(0, LCD_COLOR_RED);
 
-	}else{
+		if(START_FLAG == 1)
+		{
+			if(StaticTouchData.y<160)
+			{
+				addSchedulerEvent(SHIFT_L);
+			}
+
+			else if(StaticTouchData.y>160)
+			{
+				addSchedulerEvent(SHIFT_R);
+			}
+		}
+		else
+		{
+			START_FLAG = 1;
+			addSchedulerEvent(START);
+		}
+
+		//LCD_Clear(0, LCD_COLOR_RED);
+
+	}
+	else{
+
 
 		/* Touch not pressed */
-		printf("\nNot pressed \n");
-		LCD_Clear(0, LCD_COLOR_GREEN);
+		//printf("\nNot pressed \n");
+		//LCD_Clear(0, LCD_COLOR_GREEN);
+
 	}
 
 	STMPE811_Write(STMPE811_FIFO_STA, 0x01);
@@ -151,5 +281,5 @@ void EXTI15_10_IRQHandler()
 
 }
 #endif // TOUCH_INTERRUPT_ENABLED
-#endif // COMPILE_TOUCH_FUNCTIONS
+//#endif // COMPILE_TOUCH_FUNCTIONS
 

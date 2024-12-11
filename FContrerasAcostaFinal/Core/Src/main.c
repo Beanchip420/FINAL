@@ -18,12 +18,20 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-#include "ApplicationCode.h"
+#include <stdio.h>
+#include <inttypes.h>
+
+extern void initialise_monitor_handles(void);
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 void SystemClockOverride(void);
 // static void MX_GPIO_Init(void);
+
+//static uint8_t *Current_Shape;
+//static uint16_t Current_Color;
+
+static uint16_t time_counter = RESET;
 
 /**
   * @brief  The application entry point.
@@ -31,29 +39,72 @@ void SystemClockOverride(void);
   */
 int main(void)
 {
-
+  initialise_monitor_handles();
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
   HAL_Init();
 
   // The default system configuration function is "suspect" so we need to make our own clock configuration
-  // TODO:Note - You, the developer, MAY have to play with some of this configuration as you progress in your project
   SystemClockOverride();
 
-  ApplicationInit(); // Initializes the LCD functionality
+  ApplicationInit();
 
-  LCD_Visual_Demo();
+  //LCD_Visual_Demo();
 
-  HAL_Delay(5000);
+  //HAL_Delay(5000);
 
   // DO NOT CALL THIS FUNCTION WHEN INTERRUPT MODE IS SELECTED IN THE COMPILE SWITCH IN stmpe811.h
   // Un-comment the below function after setting COMPILE_TOUCH to 1 in stmpe811.h
-  //LCD_Touch_Polling_Demo(); // This function Will not return
+  // LCD_Touch_Polling_Demo(); // This function Will not return
+
+  // Orientation of the board: Top left is the x and y axis ORIGIN
 
   while (1)
-  {
+	{
+	  //ApplicationGame();
+	  if (getScheduledEvents() == START)
+	   {
+		   removeSchedulerEvent(START);
+		   LCD_Clear(0,LCD_COLOR_BLACK);
+		   LCD_SetTextColor(LCD_COLOR_WHITE);
+		   LCD_SetFont(&Font12x12);
+		   TIMER5_Start();
+		   Start_Tetris();
 
-  }
+	   }
+	  else if(getScheduledEvents() == COUNT)
+	  {
+		  removeSchedulerEvent(COUNT);
+		  Move_Down();
+		  Check_Endgame();
+	  }
+	  else if(getScheduledEvents() == ROTATE_CC)
+	  {
+		  removeSchedulerEvent(ROTATE_CC);
+		  Rotate_CC();
+	  }
+	  else if(getScheduledEvents() == SHIFT_L)
+	  {
+		  removeSchedulerEvent(SHIFT_L);
+		  Move_Left();
+		  //Check_Endgame();
 
+	  }
+	  else if(getScheduledEvents() == SHIFT_R)
+	  {
+		  removeSchedulerEvent(SHIFT_R);
+		  Move_Right();
+		  //Check_Endgame();
+
+	  }
+	}
+
+}
+
+uint32_t Time_Elapsed(void)
+{
+	uint32_t time_in_seconds;
+	time_in_seconds = (time_counter*DROP)+( ( (TIMER_ReturnVal() + ONE) * (PRESCALER + ONE) ) / PCLK);
+	return time_in_seconds;
 }
 
 /**
@@ -304,6 +355,10 @@ void SystemClockOverride(void)
 
 /* USER CODE BEGIN 4 */
 
+
+
+
+
 /* USER CODE END 4 */
 
 /**
@@ -313,7 +368,13 @@ void SystemClockOverride(void)
 void Error_Handler(void)
 {
   /* USER CODE BEGIN Error_Handler_Debug */
+
+
+
   /* User can add his own implementation to report the HAL error return state */
+
+
+
   __disable_irq();
   while (1)
   {

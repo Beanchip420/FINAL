@@ -1,0 +1,5 @@
+../Core/Src/InterruptControl.c:16:6:IRQ_ENABLE	16	static
+../Core/Src/InterruptControl.c:24:6:IRQ_DISABLE	16	static
+../Core/Src/InterruptControl.c:31:6:IRQ_CLEAR	16	static
+../Core/Src/InterruptControl.c:38:6:IRQ_SET	16	static
+../Core/Src/InterruptControl.c:44:6:CLEAR_EXTI	16	static

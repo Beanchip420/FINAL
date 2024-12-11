@@ -1,0 +1,2 @@
+../Core/Src/RNG.c:16:6:RNG_Init	2
+../Core/Src/RNG.c:29:10:Gen_Number	2

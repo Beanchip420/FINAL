@@ -234,7 +234,7 @@ void STMPE811_DetermineTouchPosition(STMPE811_TouchData * data)
         data->y = 319 - TM_STMPE811_ReadY(data->y);
     } else if (data->orientation == STMPE811_Orientation_Portrait_2) {
         data->x = TM_STMPE811_ReadX(data->x);
-        data->y = TM_STMPE811_ReadY(data->y);
+        data->y = 319 - TM_STMPE811_ReadY(data->y);
     } else if (data->orientation == STMPE811_Orientation_Landscape_1) {
         data->y = TM_STMPE811_ReadX(data->y);
         data->x = 319 - TM_STMPE811_ReadY(data->x);
