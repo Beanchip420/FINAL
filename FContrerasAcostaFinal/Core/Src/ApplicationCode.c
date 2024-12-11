@@ -44,13 +44,12 @@ void ApplicationInit(void)
 	// right would be low x value, low y value.
 
 	StaticTouchData.orientation = STMPE811_Orientation_Portrait_2;
-
 	#if TOUCH_INTERRUPT_ENABLED == 1
-	LCDTouchScreenInterruptGPIOInit();
-
-
+		LCDTouchScreenInterruptGPIOInit();
 
 	#endif // TOUCH_INTERRUPT_ENABLED
+
+
 
 	#endif // COMPILE_TOUCH_FUNCTIONS
 }
@@ -62,17 +61,8 @@ void ApplicationGame(void)
 		if(START_FLAG == 0)
 		{
 			addSchedulerEvent(START);
+
 			START_FLAG = 1;
-		}
-
-		else if(START_FLAG == 1 && StaticTouchData.x<120)
-		{
-			addSchedulerEvent(SHIFT_L);
-		}
-
-		else if(START_FLAG == 1 && StaticTouchData.x>240)
-		{
-			addSchedulerEvent(SHIFT_R);
 		}
 
 	}
@@ -180,6 +170,7 @@ void LCD_Touch_Polling_Demo(void)
 		}
 	}
 }
+#endif
 
 
 // TouchScreen Interrupt
@@ -239,18 +230,40 @@ void EXTI15_10_IRQHandler()
 	// Determine if it is pressed or unpressed
 	if(isTouchDetected) // Touch has been detected
 	{
-		printf("\nPressed");
+		//printf("\nPressed");
 		// May need to do numerous retries? 
 		DetermineTouchPosition(&StaticTouchData);
 		/* Touch valid */
 		printf("\nX: %03d\nY: %03d \n", StaticTouchData.x, StaticTouchData.y);
-		LCD_Clear(0, LCD_COLOR_RED);
 
-	}else{
+		if(START_FLAG == 1)
+		{
+			if(StaticTouchData.y<160)
+			{
+				addSchedulerEvent(SHIFT_L);
+			}
+
+			else if(StaticTouchData.y>160)
+			{
+				addSchedulerEvent(SHIFT_R);
+			}
+		}
+		else
+		{
+			START_FLAG = 1;
+			addSchedulerEvent(START);
+		}
+
+		//LCD_Clear(0, LCD_COLOR_RED);
+
+	}
+	else{
+
 
 		/* Touch not pressed */
-		printf("\nNot pressed \n");
-		LCD_Clear(0, LCD_COLOR_GREEN);
+		//printf("\nNot pressed \n");
+		//LCD_Clear(0, LCD_COLOR_GREEN);
+
 	}
 
 	STMPE811_Write(STMPE811_FIFO_STA, 0x01);
@@ -268,5 +281,5 @@ void EXTI15_10_IRQHandler()
 
 }
 #endif // TOUCH_INTERRUPT_ENABLED
-#endif // COMPILE_TOUCH_FUNCTIONS
+//#endif // COMPILE_TOUCH_FUNCTIONS
 

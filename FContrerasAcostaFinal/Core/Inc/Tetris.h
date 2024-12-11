@@ -46,6 +46,10 @@ void Rotate_CC(void);
 
 bool Check_Down(void);
 
+bool Check_Right(void);
+
+bool Check_Left(void);
+
 void Move_Down(void);
 
 void Move_Right(void);

@@ -60,7 +60,7 @@ int main(void)
 
   while (1)
 	{
-	  ApplicationGame();
+	  //ApplicationGame();
 	  if (getScheduledEvents() == START)
 	   {
 		   removeSchedulerEvent(START);
@@ -85,13 +85,15 @@ int main(void)
 	  else if(getScheduledEvents() == SHIFT_L)
 	  {
 		  removeSchedulerEvent(SHIFT_L);
-		  //Move_Left();
+		  Move_Left();
+		  //Check_Endgame();
 
 	  }
 	  else if(getScheduledEvents() == SHIFT_R)
 	  {
 		  removeSchedulerEvent(SHIFT_R);
-		  //Move_Rigth();
+		  Move_Right();
+		  //Check_Endgame();
 
 	  }
 	}

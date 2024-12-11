@@ -13,7 +13,7 @@
 #include "stm32f4xx_hal.h"
 
 #define COMPILE_TOUCH  1
-#define COMPILE_TOUCH_INTERRUPT_SUPPORT    9
+#define COMPILE_TOUCH_INTERRUPT_SUPPORT    1
 
 // Example Code is not Set
 

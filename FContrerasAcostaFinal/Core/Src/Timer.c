@@ -35,6 +35,7 @@ void TIMER_Init(void)
 	// TODO: CHANGE ME TO ARR_3 for the blocks to fall every 3 Seconds
 
 	htim2.Init.Period = ARR_1;
+	//htim2.Init.Period = ARR_3;
 	htim2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
 	htim2.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
 	timHALStatus = HAL_TIM_Base_Init(&htim2);

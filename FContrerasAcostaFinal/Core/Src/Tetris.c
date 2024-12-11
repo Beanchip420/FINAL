@@ -11,8 +11,13 @@
 // IF THIS LOWEST ROW FLAG is one that means that the lowest row has not been found
 volatile uint8_t ENDGAME_FLAG = 0;
 volatile uint8_t ELAPSE_FLAG = 0;
+volatile uint64_t count_value = 0;
+volatile uint64_t time_elapsed = 0;
 
 static uint8_t LOWRFLAG = 1;
+static uint8_t HIGHRFLAG = 1;
+
+static uint8_t highest_row = 0;
 static uint8_t lowest_row = 0;
 
 static uint8_t far_overal_l_col = 0;
@@ -24,9 +29,9 @@ static block_t block_struct;
 // Case 0:
 static uint8_t O [4] [4] =
 {
-		{1, 1, 0, 0},
+		{0, 1, 1, 0},
 
-		{1, 1, 0, 0},
+		{0, 1, 1, 0},
 
 		{0,	0, 0, 0},
 
@@ -85,11 +90,11 @@ static uint8_t L [4] [4] =
 // Case 5:
 static uint8_t J [4] [4] =
 {
-		{0,	1,	0,	0},
+		{0,	0,	1,	0},
 
-		{0,	1,	0,	0},
+		{0,	0,	1,	0},
 
-		{1,	1,	0 ,	0},
+		{0,	1,	1 ,	0},
 
 		{0,	0,	0,	0}
 };
@@ -98,11 +103,11 @@ static uint8_t J [4] [4] =
 
 static uint8_t T [4] [4] =
 {
+		{0,	0,	0,	0},
+
 		{1,	1,	1,	0},
 
 		{0,	1,	0,	0},
-
-		{0,	0,	0,	0},
 
 		{0,	0,	0,	0}
 
@@ -110,35 +115,35 @@ static uint8_t T [4] [4] =
 
 static uint8_t Board [16][12] =
 {
-	{1,	1,	0,	0,	0,	0,	0,	0,	0,	0,	1,	1},
+	{1,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	1},
 
-	{1,	1,	0,	0,	0,	0,	0,	0,	0,	0,	1,	1},
+	{1,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	1},
 
-	{1,	1,	0,	0,	0,	0,	0,	0,	0,	0,	1,	1},
+	{1,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	1},
 
-	{1,	1,	0,	0,	0,	0,	0,	0,	0,	0,	1,	1},
+	{1,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	1},
 
-	{1,	1,	0,	0,	0,	0,	0,	0,	0,	0,	1,	1},
+	{1,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	1},
 
-	{1,	1,	0,	0,	0,	0,	0,	0,	0,	0,	1,	1},
+	{1,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	1},
 
-	{1,	1,	0,	0,	0,	0,	0,	0,	0,	0,	1,	1},
+	{1,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	1},
 
-	{1,	1,	0,	0,	0,	0,	0,	0,	0,	0,	1,	1},
+	{1,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	1},
 
-	{1,	1,	0,	0,	0,	0,	0,	0,	0,	0,	1,	1},
+	{1,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	1},
 
-	{1,	1,	0,	0,	0,	0,	0,	0,	0,	0,	1,	1},
+	{1,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	1},
 
-	{1,	1,	0,	0,	0,	0,	0,	0,	0,	0,	1,	1},
+	{1,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	1},
 
-	{1,	1,	0,	0,	0,	0,	0,	0,	0,	0,	1,	1},
+	{1,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	1},
 
-	{1,	1,	0,	0,	0,	0,	0,	0,	0,	0,	1,	1},
+	{1,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	1},
 
-	{1,	1,	0,	0,	0,	0,	0,	0,	0,	0,	1,	1},
+	{1,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	1},
 
-	{1,	1,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0},
+	{1,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	1},
 
 	{1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1}
 
@@ -346,13 +351,42 @@ bool Check_Down(void)
 			}
 		}
 
-	if ( LOWRFLAG == 0)
+//	if ( LOWRFLAG == 0)
+//	{
+//		for (i = lowest_row; i> -1; i--  )
+//		{
+//			for ( j = far_overal_l_col; j <= far_overal_r_col; j++)
+//			{
+//				if(Board[(block_struct.y_pos)+i][(block_struct.x_pos)+j] && block_struct.Current_Shape[i][j] == 1)
+//				{
+//					return false;
+//				}
+//			}
+//		}
+//	}
+//		LOWRFLAG = 1;
+//		return true;
+
+	if (LOWRFLAG == 0)
 	{
-		for (i = lowest_row; i> -1; i--  )
+		for (int i = lowest_row; i > -1; i--)
 		{
-			for ( j= far_overal_l_col; j <= far_overal_r_col; j++)
+			for (int j = far_overal_l_col; j <= far_overal_r_col; j++)
 			{
-				if(Board[(block_struct.y_pos)+i][(block_struct.x_pos)+j] && block_struct.Current_Shape[i][j] == 1)
+				int8_t board_x = block_struct.x_pos + j;
+				int8_t board_y = block_struct.y_pos + i;
+
+				if (board_x == 0 || board_x == 11)
+				{
+					continue;
+				}
+
+				if (board_x < 0 || board_x >= 12 || board_y >= 16)
+				{
+					continue;
+				}
+
+				if (Board[board_y][board_x] && block_struct.Current_Shape[i][j] == 1)
 				{
 					return false;
 				}
@@ -360,7 +394,7 @@ bool Check_Down(void)
 		}
 
 		LOWRFLAG = 1;
-		return true;
+		return true; // No collisions
 
 	}
 	return false;
@@ -409,8 +443,8 @@ void Check_Endgame(void)
 
 void EndGame(void)
 {
-	uint32_t count_value = 0;
-	uint32_t time_elapsed = 0;
+	count_value = 0;
+	time_elapsed = 0;
 
 	char Time[5] = {'P', 'P', 'P', 'P', 'P'};
 
@@ -451,13 +485,14 @@ void EndGame(void)
 	LCD_DisplayChar(185, 250, 'I');
 	LCD_DisplayChar(195, 250, 'N');
 
+	TIMER_Stop();
 	count_value = TIMER_ReturnVal();
 	// In seconds
 	time_elapsed = ((count_value + 1)*(PRESCALER + 1))/PCLK;
 	itoa(time_elapsed, Time, 10);
 	uint8_t Temp = 0;
 
-	for (uint8_t i = 4; i>=0; i--)
+	for (int8_t i = 4; i>=0; i--)
 	{
 		if ( Time[i] != 'P' && ELAPSE_FLAG == 0)
 		{
@@ -477,15 +512,267 @@ void EndGame(void)
 	HAL_Delay(15000);
 }
 
-//void Move_Right(void)
-//{
+bool Check_Right(void)
+{
+	//far_overal_l_col = 0;
+//	static uint8_t LOWRFLAG = 1;
+//	static uint8_t RIGHTCFLAG = 1;
+//	static uint8_t LEFTFLAG = 1;
+//	static uint8_t highest_row = 0;
+//	static uint8_t lowest_row = 0;
 //
-//}
-//
-//void Move_Left(void)
-//{
-//
-//}
+//	static uint8_t far_overal_l_col = 0;
+//	static uint8_t far_overal_r_col = 0;
+	far_overal_r_col = 0;
+	far_overal_l_col = 0;
+
+	highest_row = 0;
+	lowest_row = 0;
+	int8_t i = 0;
+	int8_t j = 0;
+
+	for ( i = 3; i > -1; i--)
+		{
+			for ( j = 0; j < 4; j++)
+			{
+				// Find the lowest row that has element equal to 1 because then when checking
+				// the board I can just check Board[(block_struct.y_pos)-lowest_row]
+				if( (block_struct.Current_Shape)[i][j] && LOWRFLAG == 1)
+				{
+					LOWRFLAG = 0;
+					lowest_row = i;
+					break;
+				}
+			}
+		}
+
+		LOWRFLAG = 1;
+
+		for ( i = 0; i < 4 ; i++)
+		{
+			for ( j = 0; j < 4; j++)
+			{
+				// Find the highest row that has element equal to 1 because then when checking
+				// the board I can just check Board[(block_struct.y_pos)-lowest_row]
+				if( (block_struct.Current_Shape)[i][j] && HIGHRFLAG == 1)
+				{
+					HIGHRFLAG = 0;
+					highest_row = i;
+					break;
+				}
+			}
+		}
+
+		HIGHRFLAG = 1;
+
+
+		for ( j=0; j<4; j++)
+		{
+			for ( i=0; i<=lowest_row; i++)
+			{
+				if ( ( block_struct.Current_Shape)[i][j] && LOWRFLAG == 1)
+				{
+					LOWRFLAG = 0;
+					far_overal_l_col = j;
+					break;
+				}
+			}
+			if (LOWRFLAG == 0)
+			{
+				break;
+			}
+		}
+
+		LOWRFLAG = 1;
+
+		for ( j = 3; j > -1; j--)
+		{
+			for ( i = 0; i <= lowest_row; i++)
+			{
+				if ( ( block_struct.Current_Shape)[i][j] && LOWRFLAG == 1)
+				{
+					LOWRFLAG = 0;
+					far_overal_r_col = j;
+					break;
+				}
+
+			}
+			if (LOWRFLAG == 0)
+			{
+				break;
+			}
+		}
+
+	if ( LOWRFLAG == 0)
+	{
+		for (j = far_overal_r_col; j >= far_overal_l_col; j--  )
+		{
+			for ( i = highest_row; i <= lowest_row; i++)
+			{
+				if(Board[(block_struct.y_pos)+i][(block_struct.x_pos)+j] && block_struct.Current_Shape[i][j] == 1)
+				{
+					return false;
+				}
+			}
+		}
+
+		LOWRFLAG = 1;
+		return true;
+
+	}
+	return false;
+}
+
+bool Check_Left(void)
+{
+	//far_overal_l_col = 0;
+	//	static uint8_t LOWRFLAG = 1;
+	//	static uint8_t RIGHTCFLAG = 1;
+	//	static uint8_t LEFTFLAG = 1;
+	//	static uint8_t highest_row = 0;
+	//	static uint8_t lowest_row = 0;
+	//
+	//	static uint8_t far_overal_l_col = 0;
+	//	static uint8_t far_overal_r_col = 0;
+	far_overal_r_col = 0;
+	far_overal_l_col = 0;
+
+	highest_row = 0;
+	lowest_row = 0;
+	int8_t i = 0;
+	int8_t j = 0;
+
+	for ( i = 3; i > -1; i--)
+		{
+			for ( j = 0; j < 4; j++)
+			{
+				// Find the lowest row that has element equal to 1 because then when checking
+				// the board I can just check Board[(block_struct.y_pos)-lowest_row]
+				if( (block_struct.Current_Shape)[i][j] && LOWRFLAG == 1)
+				{
+					LOWRFLAG = 0;
+					lowest_row = i;
+					break;
+				}
+			}
+		}
+
+		LOWRFLAG = 1;
+
+		for ( i = 0; i < 4 ; i++)
+		{
+			for ( j = 0; j < 4; j++)
+			{
+				// Find the highest row that has element equal to 1 because then when checking
+				// the board I can just check Board[(block_struct.y_pos)-lowest_row]
+				if( (block_struct.Current_Shape)[i][j] && HIGHRFLAG == 1)
+				{
+					HIGHRFLAG = 0;
+					highest_row = i;
+					break;
+				}
+			}
+		}
+
+		HIGHRFLAG = 1;
+
+
+		for ( j = 0; j < 4; j++)
+		{
+			for ( i = 0; i<= lowest_row; i++)
+			{
+				if ( ( block_struct.Current_Shape)[i][j] && LOWRFLAG == 1)
+				{
+					LOWRFLAG = 0;
+					far_overal_l_col = j;
+					break;
+				}
+			}
+			if (LOWRFLAG == 0)
+			{
+				break;
+			}
+		}
+
+		LOWRFLAG = 1;
+
+		for ( j = 3; j > -1; j--)
+		{
+			for ( i = 0; i <= lowest_row; i++)
+			{
+				if ( ( block_struct.Current_Shape)[i][j] && LOWRFLAG == 1)
+				{
+					LOWRFLAG = 0;
+					far_overal_r_col = j;
+					break;
+				}
+
+			}
+			if (LOWRFLAG == 0)
+			{
+				break;
+			}
+		}
+
+	if ( LOWRFLAG == 0)
+	{
+		for (j = far_overal_l_col; j <= far_overal_r_col; j++  )
+		{
+			for ( i = highest_row; i <= lowest_row; i++)
+			{
+				if(Board[(block_struct.y_pos)+i][(block_struct.x_pos)+j] && block_struct.Current_Shape[i][j] == 1)
+				{
+					return false;
+				}
+			}
+		}
+
+		LOWRFLAG = 1;
+		return true;
+
+	}
+	return false;
+}
+
+void Move_Right(void)
+{
+	if( Check_Right() == true )
+	{
+		uint16_t temp_color;
+		temp_color = block_struct.Current_Color;
+		block_struct.Current_Color = LCD_COLOR_BLACK;
+		Draw_Shape(&block_struct);
+
+
+		block_struct.Current_Color = temp_color;
+		block_struct.x_pos +=1;
+		Draw_Shape(&block_struct);
+	}
+	else
+	{
+
+	}
+}
+
+void Move_Left(void)
+{
+	if( Check_Left() == true )
+	{
+		uint16_t temp_color;
+		temp_color = block_struct.Current_Color;
+		block_struct.Current_Color = LCD_COLOR_BLACK;
+		Draw_Shape(&block_struct);
+
+
+		block_struct.Current_Color = temp_color;
+		block_struct.x_pos -=1;
+		Draw_Shape(&block_struct);
+	}
+	else
+	{
+
+	}
+}
 
 
 
