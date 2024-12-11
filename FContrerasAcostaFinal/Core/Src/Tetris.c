@@ -9,9 +9,16 @@
 
 
 // IF THIS LOWEST ROW FLAG is one that means that the lowest row has not been found
-volatile uint8_t LOWRFLAG = 1;
 volatile uint8_t ENDGAME_FLAG = 0;
 volatile uint8_t ELAPSE_FLAG = 0;
+
+static uint8_t LOWRFLAG = 1;
+static uint8_t lowest_row = 0;
+
+static uint8_t far_overal_l_col = 0;
+static uint8_t far_overal_r_col = 0;
+static uint8_t Ran_Numb;
+
 
 static block_t block_struct;
 // Case 0:
@@ -137,7 +144,6 @@ static uint8_t Board [16][12] =
 
 };
 
-static uint8_t Ran_Numb;
 
 void Start_Tetris(void)
 {
@@ -188,7 +194,6 @@ void Start_Tetris(void)
 
 	Draw_Shape(&block_struct);
 	TIMER_Int_Start();
-	TIMER5_Start();
 
 }
 
@@ -280,11 +285,12 @@ void Rotate_CC(void)
 }
 bool Check_Down(void)
 {
-	uint8_t lowest_row = 0;
-	uint8_t farthest_l_col = 0;
-	uint8_t farthest_r_col = 0;
-	uint8_t i = 0;
-	uint8_t j = 0;
+	far_overal_l_col = 0;
+	far_overal_r_col = 0;
+
+	lowest_row = 0;
+	int8_t i = 0;
+	int8_t j = 0;
 
 	for ( i = 3; i > -1; i--)
 		{
@@ -296,40 +302,66 @@ bool Check_Down(void)
 				{
 					LOWRFLAG = 0;
 					lowest_row = i;
-					farthest_l_col = j;
+					break;
+				}
+			}
+		}
+
+		LOWRFLAG = 1;
+
+		for ( j=0; j<4; j++)
+		{
+			for ( i=0; i<=lowest_row; i++)
+			{
+				if ( ( block_struct.Current_Shape)[i][j] && LOWRFLAG == 1)
+				{
+					LOWRFLAG = 0;
+					far_overal_l_col = j;
 					break;
 				}
 			}
 			if (LOWRFLAG == 0)
 			{
-				for ( j = 3; j>-1; j--)
-				{
-					if ( (block_struct.Current_Shape)[lowest_row][j] == 1 )
-					{
-						farthest_r_col = j;
-						break;
-					}
-				}
 				break;
+			}
+		}
 
+		LOWRFLAG = 1;
+
+		for ( j=3; j>-1; j--)
+		{
+			for ( i=0; i<=lowest_row; i++)
+			{
+				if ( ( block_struct.Current_Shape)[i][j] && LOWRFLAG == 1)
+				{
+					LOWRFLAG = 0;
+					far_overal_r_col = j;
+					break;
+				}
+
+			}
+			if (LOWRFLAG == 0)
+			{
+				break;
 			}
 		}
 
 	if ( LOWRFLAG == 0)
 	{
-//		for (i = 3; i > -1; i--)
-//		{
-		for (j = farthest_l_col; j <= farthest_r_col; j++)
+		for (i = lowest_row; i> -1; i--  )
 		{
-			if( Board[ (block_struct.y_pos)+lowest_row] [(block_struct.x_pos)+j] == 1)
+			for ( j= far_overal_l_col; j <= far_overal_r_col; j++)
 			{
-				return false;
+				if(Board[(block_struct.y_pos)+i][(block_struct.x_pos)+j] && block_struct.Current_Shape[i][j] == 1)
+				{
+					return false;
+				}
 			}
 		}
 
-		//}
-	LOWRFLAG = 1;
-	return true;
+		LOWRFLAG = 1;
+		return true;
+
 	}
 	return false;
 }
@@ -353,6 +385,7 @@ void Move_Down(void)
 		TIMER_Int_Stop();
 		TIMER_Reset();
 		Update_Board();
+		Check_Endgame();
 		Start_Tetris();
 
 	}
@@ -368,7 +401,7 @@ void Check_Endgame(void)
 
 			EndGame();
 			ENDGAME_FLAG = 1;
-
+			break;
 		}
 	}
 
@@ -385,18 +418,38 @@ void EndGame(void)
 	LCD_SetTextColor(LCD_COLOR_WHITE);
 	LCD_SetFont(&Font12x12);
 
-	LCD_DisplayChar(20, 130, 'E');
-	LCD_DisplayChar(30, 130, 'L');
-	LCD_DisplayChar(40, 130, 'A');
-	LCD_DisplayChar(50, 130, 'P');
-	LCD_DisplayChar(60, 130, 'S');
-	LCD_DisplayChar(70, 130, 'E');
-	LCD_DisplayChar(80, 130, 'D');
+	LCD_DisplayChar(20, 100, 'E');
+	LCD_DisplayChar(30, 100, 'L');
+	LCD_DisplayChar(40, 100, 'A');
+	LCD_DisplayChar(50, 100, 'P');
+	LCD_DisplayChar(60, 100, 'S');
+	LCD_DisplayChar(70, 100, 'E');
+	LCD_DisplayChar(80, 100, 'D');
 
-	LCD_DisplayChar(100, 150, 'T');
-	LCD_DisplayChar(110, 150, 'I');
-	LCD_DisplayChar(120, 150, 'M');
-	LCD_DisplayChar(130, 150, 'E');
+	LCD_DisplayChar(100, 100, 'T');
+	LCD_DisplayChar(110, 100, 'I');
+	LCD_DisplayChar(120, 100, 'M');
+	LCD_DisplayChar(130, 100, 'E');
+
+	LCD_DisplayChar(15, 250, 'R');
+	LCD_DisplayChar(25, 250, 'E');
+	LCD_DisplayChar(35, 250, 'S');
+	LCD_DisplayChar(45, 250, 'E');
+	LCD_DisplayChar(55, 250, 'T');
+
+	LCD_DisplayChar(75, 250, 'T');
+	LCD_DisplayChar(85, 250, 'O');
+
+	LCD_DisplayChar(105, 250, 'P');
+	LCD_DisplayChar(115, 250, 'L');
+	LCD_DisplayChar(125, 250, 'A');
+	LCD_DisplayChar(135, 250, 'Y');
+
+	LCD_DisplayChar(155, 250, 'A');
+	LCD_DisplayChar(165, 250, 'G');
+	LCD_DisplayChar(175, 250, 'A');
+	LCD_DisplayChar(185, 250, 'I');
+	LCD_DisplayChar(195, 250, 'N');
 
 	count_value = TIMER_ReturnVal();
 	// In seconds
@@ -404,25 +457,38 @@ void EndGame(void)
 	itoa(time_elapsed, Time, 10);
 	uint8_t Temp = 0;
 
-	for (uint8_t i = 4; i>-1; i--)
+	for (uint8_t i = 4; i>=0; i--)
 	{
 		if ( Time[i] != 'P' && ELAPSE_FLAG == 0)
 		{
 			Temp = i;
 			ELAPSE_FLAG = 1;
+			break;
 		}
 	}
 
-	uint32_t space = 0;
+	uint8_t space = 0;
 	for (uint8_t i = 0; i < Temp; i++)
 	{
 
-		LCD_DisplayChar(40+space, 290 ,Time[i]);
+		LCD_DisplayChar(150+space, 100 ,Time[i]);
 		space += 10;
 	}
-
-	Hal_Delay(5000);
+	HAL_Delay(15000);
 }
+
+//void Move_Right(void)
+//{
+//
+//}
+//
+//void Move_Left(void)
+//{
+//
+//}
+
+
+
 
 
 

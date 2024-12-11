@@ -20,6 +20,8 @@
 #include "Button_Driver.h"
 #include "RNG.h"
 
+#include "stm32f4xx_hal.h"
+
 #define DROP	3
 #define ONE 	1
 #define HALF_BOARD	120

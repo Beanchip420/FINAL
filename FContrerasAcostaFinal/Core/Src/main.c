@@ -67,6 +67,7 @@ int main(void)
 		   LCD_Clear(0,LCD_COLOR_BLACK);
 		   LCD_SetTextColor(LCD_COLOR_WHITE);
 		   LCD_SetFont(&Font12x12);
+		   TIMER5_Start();
 		   Start_Tetris();
 
 	   }
@@ -84,13 +85,13 @@ int main(void)
 	  else if(getScheduledEvents() == SHIFT_L)
 	  {
 		  removeSchedulerEvent(SHIFT_L);
-		  //Rotate_CC();
+		  //Move_Left();
 
 	  }
 	  else if(getScheduledEvents() == SHIFT_R)
 	  {
 		  removeSchedulerEvent(SHIFT_R);
-		  //Rotate_CC();
+		  //Move_Rigth();
 
 	  }
 	}
